@@ -20,7 +20,7 @@ new Transaction().
     // Task
     console.log('Perform Task B');
     next('Error time! Release the rollbacks!');
-  }, function(res, taskBResult) {
+  }, function(taskBResult, next) {
     // Rollback
     console.log('Currently, the last rollback of a Janus-Transaction never fires :X', taskBResult);
     next();
