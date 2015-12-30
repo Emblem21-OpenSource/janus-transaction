@@ -1,0 +1,10 @@
+{
+  "name": "janus-transaction",
+  "version": "1.0.0",
+  "description": "Using caolan's async to perform asynchronous transactional rollbacks. ",
+  "main": "index.js",
+  "author": "Emblem 21",
+  "dependencies": {
+    "async": "^1.5.0",
+  }
+}
