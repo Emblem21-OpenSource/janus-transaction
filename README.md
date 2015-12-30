@@ -1,5 +1,5 @@
 # janus-transaction
-Janus-Transaction lets utilizes Caolan's ```async``` to perform asynchronous transactional rollbacks.
+Janus-Transaction lets you utilizes Caolan's ```async``` to perform asynchronous transactional rollbacks.
 
 This operates like a a normal ```async.waterfall``` process until an error occurs and then each step of the waterfall will be reversed via custom rollback methods.
 
