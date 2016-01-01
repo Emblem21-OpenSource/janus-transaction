@@ -50,31 +50,34 @@ Transaction.prototype.add = function(task, rollback) {
  */
 Transaction.prototype.exec = function(success, error) {
   var self = this;
-  async.waterfall(this.tasks, function(err) {
-    if(err) {
+  async.waterfall(this.tasks, function(originalErr) {
+    if(originalErr) {
       // Perform all rollbacks
       var tasks = [];
-      for(var i = self.count, len = -1; i >len; i--) {
-        if(i % 2 === 0) {
-          (function(index) {
-            tasks.push(function(next) {
-              var args = self.args[index];
-              args.push(next);
-              self.rollbacks[index].apply(async, args);
-            });
-          })(i);
+      if(self.tasks.length === 2) {
+        // Only one transaction in the chain, skip to the end
+        return error(originalErr, undefined, undefined);
+      } else {
+        // Roll through all transactions
+        for(var i = self.count, len = -1; i >len; i--) {
+          if(i % 2 === 0) {
+            (function(index) {
+              tasks.push(function(next) {
+                var args = self.args[index] || [];
+                args.push(next);
+                self.rollbacks[index].apply(this, args);
+              });
+            })(i);
+          }
         }
       }
 
       // Run all rollbacks
-      async.waterfall(tasks, function(err, results) {
-        if(err) {
-          return error(err);
-        }
-        return error(results);
+      return async.waterfall(tasks, function(rollbackErr, results) {
+        error(originalErr, rollbackErr, results);
       });
     } else {
-      success.apply(this, Array.prototype.slice.call(arguments, 1));
+      return success.apply(this, Array.prototype.slice.call(arguments, 1));
     }
   });
 };
